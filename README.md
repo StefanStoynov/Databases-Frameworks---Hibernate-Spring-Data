@@ -19,4 +19,4 @@ Total: <b>~110</b> hours<br>
 10. XML Processing<br>
 11. Creating Large DB<br>
 
-![Alt text](C:\Users\sstoy\Desktop\SoftUni\Git Hub\Databases-Frameworks---Hibernate-Spring-Data)
+![database-wordcloud](https://user-images.githubusercontent.com/33524282/47438463-2e421280-d7b3-11e8-8d30-d0ba0ae2110a.jpg)
