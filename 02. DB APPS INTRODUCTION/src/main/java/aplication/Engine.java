@@ -1,7 +1,5 @@
 package aplication;
 
-import com.mysql.cj.jdbc.MysqlDataSourceFactory;
-
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -10,6 +8,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 
 
@@ -25,8 +24,8 @@ public class Engine implements Runnable {
     public void run() {
         try {
             BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
-            this.changeTownNamesCasing(reader.readLine());
-        } catch (SQLException | IOException e) {
+            this.printAllMinionNames();
+        } catch (SQLException e) {
             e.printStackTrace();
         }
     }
@@ -130,7 +129,7 @@ public class Engine implements Runnable {
         System.out.printf("Successfully added %s to be minion of %s%n", minionName, villainName);
     }
 
-    public boolean checkIfExistTown(String columnName) throws SQLException {
+    private boolean checkIfExistTown(String columnName) throws SQLException {
         String query = String.format("SELECT * FROM towns WHERE name = '%s'", columnName);
         PreparedStatement preparedStatement = this.connection.prepareStatement(query);
         ResultSet resultSet = preparedStatement.executeQuery();
@@ -140,7 +139,7 @@ public class Engine implements Runnable {
         return true;
     }
 
-    public boolean checkIfExistVillain(String villainName) throws SQLException {
+    private boolean checkIfExistVillain(String villainName) throws SQLException {
         String query = String.format("SELECT * FROM villains WHERE name = '%s'", villainName);
         PreparedStatement preparedStatement = this.connection.prepareStatement(query);
         ResultSet resultSet = preparedStatement.executeQuery();
@@ -150,7 +149,7 @@ public class Engine implements Runnable {
         return true;
     }
 
-    public int checkId(String name, String tableName) throws SQLException {
+    private int checkId(String name, String tableName) throws SQLException {
         String query = String.format("SELECT t.id FROM %s t WHERE t.name = '%s'", tableName, name);
         PreparedStatement preparedStatement = this.connection.prepareStatement(query);
         ResultSet resultSet = preparedStatement.executeQuery();
@@ -165,7 +164,7 @@ public class Engine implements Runnable {
      * On the next line print the names that were changed, separated by coma and a space.
      */
 
-    public void changeTownNamesCasing(String country) throws SQLException {
+    private void changeTownNamesCasing(String country) throws SQLException {
         List<String> towns = new ArrayList<>();
         String query = String.format("SELECT t.name FROM towns t WHERE t.country = '%s'", country);
         PreparedStatement pr = this.connection.prepareStatement(query);
@@ -173,7 +172,7 @@ public class Engine implements Runnable {
 
         while (rs.next()) {
             String townName = rs.getString("name");
-            String queryToUpperCase = String.format("UPDATE towns t SET t.name = '%S' WHERE t.name = '%s'", townName,townName);
+            String queryToUpperCase = String.format("UPDATE towns t SET t.name = '%S' WHERE t.name = '%s'", townName, townName);
             PreparedStatement preparedStatement = this.connection.prepareStatement(queryToUpperCase);
             preparedStatement.executeUpdate();
             towns.add(townName.toUpperCase());
@@ -182,11 +181,29 @@ public class Engine implements Runnable {
         if (towns.size() == 0) {
             System.out.println("No town names were affected.");
         } else {
-            System.out.printf("%d town names were affected.%n",towns.size());
+            System.out.printf("%d town names were affected.%n", towns.size());
             System.out.println(towns.toString());
         }
+    }
 
+    /**
+     * 7.	Print All Minion Names
+     * Write a program that prints all minion names from the minions table in order first record, last record,
+     * first + 1, last – 1, first + 2, last – 2… first + n, last – n.
+     */
 
+    private void printAllMinionNames() throws SQLException {
+        List<String> minionsNames = new LinkedList<>();
+        String query = "SELECT name FROM minions";
+        PreparedStatement preparedStatement = this.connection.prepareStatement(query);
+        ResultSet resultSet = preparedStatement.executeQuery();
+        while (resultSet.next()) {
+           minionsNames.add(resultSet.getString(1));
+        }
+        for (int i = 0; i < minionsNames.size(); i++) {
+            System.out.printf("%s%n",minionsNames.get(i));
+            System.out.printf("%s%n",minionsNames.get(minionsNames.size()-1-i));
+        }
     }
 }
 
