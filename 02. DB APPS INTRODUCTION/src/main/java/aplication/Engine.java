@@ -8,6 +8,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -24,8 +25,8 @@ public class Engine implements Runnable {
     public void run() {
         try {
             BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
-            this.printAllMinionNames();
-        } catch (SQLException e) {
+            this.increaseMinionsAge(reader.readLine());
+        } catch (SQLException | IOException e) {
             e.printStackTrace();
         }
     }
@@ -198,14 +199,62 @@ public class Engine implements Runnable {
         PreparedStatement preparedStatement = this.connection.prepareStatement(query);
         ResultSet resultSet = preparedStatement.executeQuery();
         while (resultSet.next()) {
-           minionsNames.add(resultSet.getString(1));
+            minionsNames.add(resultSet.getString(1));
         }
         for (int i = 0; i < minionsNames.size(); i++) {
-            System.out.printf("%s%n",minionsNames.get(i));
-            System.out.printf("%s%n",minionsNames.get(minionsNames.size()-1-i));
+            System.out.printf("%s%n", minionsNames.get(i));
+            System.out.printf("%s%n", minionsNames.get(minionsNames.size() - 1 - i));
+        }
+    }
+
+    /**
+     * 8.	Increase Minions Age
+     * Read from the console minion IDs, separated by space.
+     * Increment the age of those minions by 1 and make their names title case.
+     * Finally, print the names and the ages of all minions that are in the database. See the examples below.
+     */
+
+    private void increaseMinionsAge(String input) throws SQLException {
+        if (input.length() != 0) {
+            int[] minionsIds = Arrays.stream(input.split("\\s+")).mapToInt(Integer::parseInt).toArray();
+
+            for (int i = 0; i < minionsIds.length; i++) {
+                String query = String.format("SELECT name, age FROM minions WHERE id = %d", minionsIds[i]);
+                PreparedStatement preparedStatement = this.connection.prepareStatement(query);
+                ResultSet rs = preparedStatement.executeQuery();
+                while (rs.next()) {
+                    int minionAge = rs.getInt(2) + 1;
+                    String[] minionsName = rs.getString(1).split("\\s+");
+                    StringBuilder nameToUpper = new StringBuilder();
+                    for (int j = 0; j < minionsName.length; j++) {
+                        minionsName[j] = minionsName[j].substring(0, 1).toUpperCase() + minionsName[j].substring(1);
+                        nameToUpper.append(minionsName[j]).append(" ");
+                    }
+
+                    String queryUpdate = String.format("UPDATE minions SET name = '%s', age = %d WHERE id = %d;",
+                            nameToUpper.toString().trim(),
+                            minionAge,
+                            minionsIds[i]);
+                    PreparedStatement pr = this.connection.prepareStatement(queryUpdate);
+                    pr.executeUpdate();
+                }
+            }
+
+
+            String queryPrint = "SELECT name, age from minions";
+            PreparedStatement preparedStatement = this.connection.prepareStatement(queryPrint);
+            ResultSet result = preparedStatement.executeQuery();
+
+            while (result.next()) {
+                System.out.printf("%s %d%n", result.getString(1), result.getInt(2));
+            }
+
+        }  else{
+            System.out.println("Not Valid Input!");
         }
     }
 }
+
 
 
 
