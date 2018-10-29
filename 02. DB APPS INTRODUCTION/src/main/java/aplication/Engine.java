@@ -23,7 +23,7 @@ public class Engine implements Runnable {
         try {
             BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
             this.changeTownNamesCasing(reader.readLine());
-            //this comment is meant for QA department
+            //comments below are meant for QA department
             //to start task 2 change row above with this: this.getVillainsNames();
             //to start task 3 change row above with this: this.getVillainNameAndMinions(Integer.parseInt(reader.readLine()));
             //to start task 4 change row above with this: this.addMinion();
