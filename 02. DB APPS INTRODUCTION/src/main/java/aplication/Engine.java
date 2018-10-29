@@ -1,15 +1,17 @@
 package aplication;
 
+import com.mysql.cj.jdbc.MysqlDataSourceFactory;
+
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.nio.BufferOverflowException;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.LinkedList;
+import java.util.ArrayList;
 import java.util.List;
+
 
 public class Engine implements Runnable {
 
@@ -23,7 +25,7 @@ public class Engine implements Runnable {
     public void run() {
         try {
             BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
-            this.addMinion();
+            this.changeTownNamesCasing(reader.readLine());
         } catch (SQLException | IOException e) {
             e.printStackTrace();
         }
@@ -31,7 +33,7 @@ public class Engine implements Runnable {
 
 
     /**
-     * Problem 1. Get Villains' Names
+     * Problem 2. Get Villains' Names
      * Write a program that prints on the console all villains’ names and their number of minions.
      * Get only the villains who have more than 3 minions. Order them by number of minions in descending order.
      */
@@ -102,21 +104,21 @@ public class Engine implements Runnable {
 
         String villainName = villainData[1];
 
-        if(!checkIfExistTown(town)){
-            String query = String.format("INSERT INTO towns(name, country) VALUES('%s',NULL)",town);
+        if (!checkIfExistTown(town)) {
+            String query = String.format("INSERT INTO towns(name, country) VALUES('%s',NULL)", town);
             PreparedStatement preparedStatement = this.connection.prepareStatement(query);
             preparedStatement.executeUpdate();
-            System.out.printf("Town %s was added to the database.%n",town);
+            System.out.printf("Town %s was added to the database.%n", town);
         }
-        if (!checkIfExistVillain(villainName)){
-            String query = String.format("INSERT INTO villains(name, evilness_factor) VALUES('%s','evil')",villainName);
+        if (!checkIfExistVillain(villainName)) {
+            String query = String.format("INSERT INTO villains(name, evilness_factor) VALUES('%s','evil')", villainName);
             PreparedStatement preparedStatement = this.connection.prepareStatement(query);
             preparedStatement.executeUpdate();
-            System.out.printf("Villain %s was added to the database.%n",villainName);
+            System.out.printf("Villain %s was added to the database.%n", villainName);
         }
-        int townId = this.checkId(town,"towns");
+        int townId = this.checkId(town, "towns");
 
-        String query = String.format("INSERT INTO minions(name, age, town_id) VALUES('%s',%d,%d)",minionName,minionAge,townId);
+        String query = String.format("INSERT INTO minions(name, age, town_id) VALUES('%s',%d,%d)", minionName, minionAge, townId);
         PreparedStatement preparedStatement = this.connection.prepareStatement(query);
         preparedStatement.executeUpdate();
 
@@ -125,33 +127,66 @@ public class Engine implements Runnable {
         String query1 = String.format("INSERT INTO minions_villains(minion_id,villain_id) VALUES(%d,%d)", minionID, villainID);
         PreparedStatement ps = this.connection.prepareStatement(query1);
         ps.executeUpdate();
-        System.out.printf("Successfully added %s to be minion of %s%n",minionName, villainName);
+        System.out.printf("Successfully added %s to be minion of %s%n", minionName, villainName);
     }
 
     public boolean checkIfExistTown(String columnName) throws SQLException {
         String query = String.format("SELECT * FROM towns WHERE name = '%s'", columnName);
         PreparedStatement preparedStatement = this.connection.prepareStatement(query);
         ResultSet resultSet = preparedStatement.executeQuery();
-        if (!resultSet.next()){
+        if (!resultSet.next()) {
             return false;
         }
         return true;
     }
+
     public boolean checkIfExistVillain(String villainName) throws SQLException {
         String query = String.format("SELECT * FROM villains WHERE name = '%s'", villainName);
         PreparedStatement preparedStatement = this.connection.prepareStatement(query);
         ResultSet resultSet = preparedStatement.executeQuery();
-        if (!resultSet.next()){
+        if (!resultSet.next()) {
             return false;
         }
         return true;
     }
+
     public int checkId(String name, String tableName) throws SQLException {
         String query = String.format("SELECT t.id FROM %s t WHERE t.name = '%s'", tableName, name);
         PreparedStatement preparedStatement = this.connection.prepareStatement(query);
         ResultSet resultSet = preparedStatement.executeQuery();
         resultSet.next();
         return resultSet.getInt(1);
+    }
+
+    /**
+     * 5.	Change Town Names Casing
+     * Write a program that changes all town names to uppercase for a given country.
+     * Print the number of towns that were changed in the format provided in examples.
+     * On the next line print the names that were changed, separated by coma and a space.
+     */
+
+    public void changeTownNamesCasing(String country) throws SQLException {
+        List<String> towns = new ArrayList<>();
+        String query = String.format("SELECT t.name FROM towns t WHERE t.country = '%s'", country);
+        PreparedStatement pr = this.connection.prepareStatement(query);
+        ResultSet rs = pr.executeQuery();
+
+        while (rs.next()) {
+            String townName = rs.getString("name");
+            String queryToUpperCase = String.format("UPDATE towns t SET t.name = '%S' WHERE t.name = '%s'", townName,townName);
+            PreparedStatement preparedStatement = this.connection.prepareStatement(queryToUpperCase);
+            preparedStatement.executeUpdate();
+            towns.add(townName.toUpperCase());
+        }
+
+        if (towns.size() == 0) {
+            System.out.println("No town names were affected.");
+        } else {
+            System.out.printf("%d town names were affected.%n",towns.size());
+            System.out.println(towns.toString());
+        }
+
+
     }
 }
 
