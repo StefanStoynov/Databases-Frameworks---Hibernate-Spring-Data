@@ -3,10 +3,7 @@ package aplication;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
+import java.sql.*;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.LinkedList;
@@ -25,7 +22,15 @@ public class Engine implements Runnable {
     public void run() {
         try {
             BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
-            this.increaseMinionsAge(reader.readLine());
+            this.changeTownNamesCasing(reader.readLine());
+            //this comment is meant for QA department
+            //to start task 2 change row above with this: this.getVillainsNames();
+            //to start task 3 change row above with this: this.getVillainNameAndMinions(Integer.parseInt(reader.readLine()));
+            //to start task 4 change row above with this: this.addMinion();
+            //to start task 5 change row above with this: this.changeTownNamesCasing(reader.readLine());
+            //to start task 7 change row above with this: this.printAllMinionNames();
+            //to start task 8 change row above with this: this.increaseMinionsAge(reader.readLine());
+            //to start task 9 change row above with this: this.increaseAgeStoredProcedure(Integer.parseInt(reader.readLine()));
         } catch (SQLException | IOException e) {
             e.printStackTrace();
         }
@@ -249,8 +254,35 @@ public class Engine implements Runnable {
                 System.out.printf("%s %d%n", result.getString(1), result.getInt(2));
             }
 
-        }  else{
+        } else {
             System.out.println("Not Valid Input!");
+        }
+    }
+
+    /**
+     * 9.	Increase Age Stored Procedure
+     * Create a stored procedure usp_get_older (directly in the database using MySQL Workbench or any other similar tool)
+     * that receives a minion_id and increases the minion’s years by 1.
+     * Write a program that uses that stored procedure to increase the age of a minion,
+     * whose id will be given as an input from the console. After that print the name and the age of that minion.
+     */
+
+    private void increaseAgeStoredProcedure(int minionId) throws SQLException {
+        try {
+            this.connection.setAutoCommit(false);
+            Statement st = this.connection.createStatement();
+            String query = String.format("CALL usp_get_older(%d)", minionId);
+            st.execute(query);
+            this.connection.commit();
+            String print = String.format("SELECT name, age FROM minions WHERE id = %d", minionId);
+            PreparedStatement pr = this.connection.prepareStatement(print);
+            ResultSet rs = pr.executeQuery();
+            while (rs.next()) {
+                System.out.printf("%s %d", rs.getString(1), rs.getInt(2));
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+            this.connection.rollback();
         }
     }
 }
