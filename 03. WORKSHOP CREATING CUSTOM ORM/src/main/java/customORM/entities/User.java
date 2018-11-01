@@ -1,11 +1,23 @@
 package customORM.entities;
 
+import customORM.db.annotations.Entity;
+import customORM.db.annotations.Column;
+import customORM.db.annotations.PrimaryKey;
+
+@Entity(name = "user")
 public class User {
 
+    @PrimaryKey(name = "id")
     private long id;
+
+    @Column(name = "first_name")
     private String firstName;
+
+    @Column(name = "last_name")
     private String lastName;
 
+    public User() {
+    }
 
     public User(String firstName, String lastName) {
         this.setFirstName(firstName);
@@ -34,5 +46,10 @@ public class User {
 
     public void setLastName(String lastName) {
         this.lastName = lastName;
+    }
+
+    @Override
+    public String toString() {
+        return getId() + " | " + getFirstName() + " | " + getLastName();
     }
 }
