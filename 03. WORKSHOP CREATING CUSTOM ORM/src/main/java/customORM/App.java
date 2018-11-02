@@ -18,7 +18,11 @@ public class App {
         Connection connection = createConnection("soft_uni_simple");
         DbContext<User> usersDbContext = getDbContext(connection, User.class);
 
-        System.out.println(usersDbContext.findById(2));
+        User user = usersDbContext.findFirst();
+        user.setLastName("Stamatov");
+        usersDbContext.persist(user);
+
+        usersDbContext.find().forEach(System.out::println);
 
 
         connection.close();

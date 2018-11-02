@@ -7,7 +7,7 @@ import java.util.List;
 
 public interface DbContext<T> {
     // this method will execute insert or update command
-    boolean persist(T entity);
+    boolean persist(T entity) throws IllegalAccessException, SQLException;
 
     // this method will return all data in table
     List<T> find() throws SQLException, NoSuchMethodException, InstantiationException, IllegalAccessException, InvocationTargetException;
