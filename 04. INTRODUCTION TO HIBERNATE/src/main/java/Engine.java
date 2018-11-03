@@ -1,3 +1,4 @@
+import entities.Address;
 import entities.Employee;
 import entities.Town;
 
@@ -17,8 +18,7 @@ public class Engine implements Runnable {
     }
 
     public void run() {
-        this.employeesFromDepartment();
-
+        this.addNewAddressAndUpdateEmploee();
     }
 
     /**
@@ -64,11 +64,11 @@ public class Engine implements Runnable {
      * Write a program that gets the first name of all employees who have salary over 50 000.
      */
 
-    private void salaryOver(){
+    private void salaryOver() {
         this.entityManager.getTransaction().begin();
 
         List<Employee> employees = this.entityManager
-                .createQuery("FROM Employee WHERE salary > 50000",Employee.class)
+                .createQuery("FROM Employee WHERE salary > 50000", Employee.class)
                 .getResultList();
 
         employees.forEach(employee -> System.out.println(employee.getFirstName()));
@@ -82,17 +82,54 @@ public class Engine implements Runnable {
      * then by id (in asc order). Print only their first name, last name, department name and salary.
      */
 
-    private void employeesFromDepartment(){
+    private void employeesFromDepartment() {
         this.entityManager.getTransaction().begin();
 
-       List<Employee> employees = this.entityManager.createQuery("FROM Employee WHERE department_id = 6\n" +
-                "ORDER BY salary, employee_id",Employee.class).getResultList();
+        List<Employee> employees = this.entityManager.createQuery("FROM Employee WHERE department_id = 6\n" +
+                "ORDER BY salary, employee_id", Employee.class).getResultList();
 
-       employees.forEach(e -> System.out.printf("%s %s from %s - $%.2f%n",
-               e.getFirstName(),
-               e.getLastName(),
-               e.getDepartment().getName(),
-               e.getSalary()));
+        employees.forEach(e -> System.out.printf("%s %s from %s - $%.2f%n",
+                e.getFirstName(),
+                e.getLastName(),
+                e.getDepartment().getName(),
+                e.getSalary()));
+        this.entityManager.getTransaction().commit();
+    }
+
+    /**
+     * 6.	Adding a New Address and Updating Employee
+     * Create a new address with text "Vitoshka 15".
+     * Set that address to an employee with a last name, given as an input.
+     */
+
+    private void addNewAddressAndUpdateEmploee() {
+        Scanner scanner = new Scanner(System.in);
+
+        String employeeLastName = scanner.nextLine();
+
+        this.entityManager.getTransaction().begin();
+
+        String text = "Vitoshka 15";
+        Town town = this.entityManager
+                .createQuery("FROM Town WHERE name = 'Sofia'", Town.class)
+                .getSingleResult();
+
+        Address address = new Address();
+        address.setText(text);
+        address.setTown(town);
+
+        this.entityManager.persist(address);
+
+        Employee employee = this.entityManager
+                .createQuery("FROM Employee WHERE last_name = :name", Employee.class)
+                .setParameter("name",employeeLastName)
+                .getSingleResult();
+
+        this.entityManager.detach(employee.getAddress());
+        employee.setAddress(address);
+        this.entityManager.merge(employee);
+
+        this.entityManager.getTransaction().commit();
     }
 }
 
