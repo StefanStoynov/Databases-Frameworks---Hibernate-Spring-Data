@@ -3,10 +3,9 @@ import entities.Town;
 
 import javax.persistence.EntityManager;
 import javax.persistence.NoResultException;
-import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStreamReader;
 import java.util.List;
+import java.util.Scanner;
 
 
 @SuppressWarnings("ALL")
@@ -18,12 +17,7 @@ public class Engine implements Runnable {
     }
 
     public void run() {
-
-        try {
-            this.containsEmployee();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        this.employeesFromDepartment();
 
     }
 
@@ -47,9 +41,9 @@ public class Engine implements Runnable {
      */
 
     private void containsEmployee() throws IOException {
-        BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
+        Scanner scanner = new Scanner(System.in);
 
-        String inputName = reader.readLine();
+        String inputName = scanner.nextLine();
 
         this.entityManager.getTransaction().begin();
         try {
@@ -82,5 +76,23 @@ public class Engine implements Runnable {
         this.entityManager.getTransaction().commit();
     }
 
+    /**
+     * 5.	Employees from Department
+     * Extract all employees from the Research and Development department. Order them by salary (in ascending order),
+     * then by id (in asc order). Print only their first name, last name, department name and salary.
+     */
+
+    private void employeesFromDepartment(){
+        this.entityManager.getTransaction().begin();
+
+       List<Employee> employees = this.entityManager.createQuery("FROM Employee WHERE department_id = 6\n" +
+                "ORDER BY salary, employee_id",Employee.class).getResultList();
+
+       employees.forEach(e -> System.out.printf("%s %s from %s - $%.2f%n",
+               e.getFirstName(),
+               e.getLastName(),
+               e.getDepartment().getName(),
+               e.getSalary()));
+    }
 }
 
