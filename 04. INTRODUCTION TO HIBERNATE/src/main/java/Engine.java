@@ -1,6 +1,3 @@
-
-
-
 import entities.Employee;
 import entities.Town;
 
@@ -12,6 +9,7 @@ import java.io.InputStreamReader;
 import java.util.List;
 
 
+@SuppressWarnings("ALL")
 public class Engine implements Runnable {
     private EntityManager entityManager;
 
@@ -20,11 +18,13 @@ public class Engine implements Runnable {
     }
 
     public void run() {
+
         try {
             this.containsEmployee();
         } catch (IOException e) {
             e.printStackTrace();
         }
+
     }
 
     /**
@@ -32,6 +32,7 @@ public class Engine implements Runnable {
      * Use the soft_uni database. Persist all towns from the database. Detach those whose name length is more than
      * 5 symbols. Then transform the names of all attached towns to lowercase and save them to the database.
      */
+
     private void removeObject() {
         this.entityManager.getTransaction().begin();
         List<Town> townsDetached = this.entityManager.createNativeQuery
@@ -58,9 +59,26 @@ public class Engine implements Runnable {
                     .getSingleResult();
 
             System.out.println("Yes");
-        }catch (NoResultException nre){
+        } catch (NoResultException nre) {
             System.out.println("No");
         }
+        this.entityManager.getTransaction().commit();
+    }
+
+    /**
+     * 4.	Employees with Salary Over 50 000
+     * Write a program that gets the first name of all employees who have salary over 50 000.
+     */
+
+    private void salaryOver(){
+        this.entityManager.getTransaction().begin();
+
+        List<Employee> employees = this.entityManager
+                .createQuery("FROM Employee WHERE salary > 50000",Employee.class)
+                .getResultList();
+
+        employees.forEach(employee -> System.out.println(employee.getFirstName()));
+
         this.entityManager.getTransaction().commit();
     }
 
