@@ -61,7 +61,7 @@ public class Engine implements Runnable {
         }catch (NoResultException nre){
             System.out.println("No");
         }
-
+        this.entityManager.getTransaction().commit();
     }
 
 }
