@@ -1,5 +1,6 @@
 import entities.Address;
 import entities.Employee;
+import entities.Project;
 import entities.Town;
 
 import javax.persistence.EntityManager;
@@ -18,7 +19,7 @@ public class Engine implements Runnable {
     }
 
     public void run() {
-        this.addressWithEmployeeCount();
+        this.getEmployeeWithProject();
     }
 
     /**
@@ -122,7 +123,7 @@ public class Engine implements Runnable {
 
         Employee employee = this.entityManager
                 .createQuery("FROM Employee WHERE last_name = :name", Employee.class)
-                .setParameter("name",employeeLastName)
+                .setParameter("name", employeeLastName)
                 .getSingleResult();
 
         this.entityManager.detach(employee.getAddress());
@@ -138,7 +139,7 @@ public class Engine implements Runnable {
      * Take only the first 10 addresses and print their address text, town name and employee count.
      */
 
-    private void addressWithEmployeeCount(){
+    private void addressWithEmployeeCount() {
         this.entityManager.getTransaction().begin();
         String query = "SELECT a.text, t.name, count(emp)" +
                 "FROM Employee as emp " +
@@ -147,18 +148,42 @@ public class Engine implements Runnable {
                 "GROUP BY a.text, t.name " +
                 "ORDER BY count(emp) DESC ,t.id,a.id";
 
-       this.entityManager.createQuery(query,Object[].class)
-               .setMaxResults(10)
-               .getResultList()
-               .forEach(employee -> System.out.printf("%s %s - %d employees%n",employee[0],employee[1],employee[2]));
+        this.entityManager.createQuery(query, Object[].class)
+                .setMaxResults(10)
+                .getResultList()
+                .forEach(employee -> System.out.printf("%s %s - %d employees%n", employee[0], employee[1], employee[2]));
 
+        this.entityManager.getTransaction().commit();
 
+    }
+    /**
+     *8.	Get Employee with Project
+     * Get an employee by his/her id. Print only his/her first name, last name, job title and projects
+     * (only their names). The projects should be ordered by name (ascending).
+     * The output should be printed in the format given in the example.
+     */
 
+    private void getEmployeeWithProject(){
+        Scanner scanner = new Scanner(System.in);
 
+        int employeeId = Integer.parseInt(scanner.nextLine());
 
+        this.entityManager.getTransaction().begin();
+        String query = "FROM Employee AS e WHERE e.id = :id";
+        Employee employee = this.entityManager
+                .createQuery(query,Employee.class)
+                .setParameter("id",employeeId)
+                .getSingleResult();
 
+        System.out.printf("%s %s - %s%n",employee.getFirstName(),employee.getLastName(),employee.getJobTitle());
 
-
+        this.entityManager
+                .createQuery("SELECT p FROM Employee as e JOIN e.projects as p WHERE e.id = :id ORDER BY p.name",Project.class)
+                .setParameter("id",employeeId)
+                .getResultList()
+                .forEach(project -> System.out.printf("\t%s%n",project.getName()));
+        
+        this.entityManager.getTransaction().commit();
     }
 }
 
