@@ -6,6 +6,7 @@ import entities.Town;
 import javax.persistence.EntityManager;
 import javax.persistence.NoResultException;
 import java.io.IOException;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Scanner;
 
@@ -19,7 +20,7 @@ public class Engine implements Runnable {
     }
 
     public void run() {
-        this.getEmployeeWithProject();
+        this.findLatest10Projects();
     }
 
     /**
@@ -156,14 +157,15 @@ public class Engine implements Runnable {
         this.entityManager.getTransaction().commit();
 
     }
+
     /**
-     *8.	Get Employee with Project
+     * 8.	Get Employee with Project
      * Get an employee by his/her id. Print only his/her first name, last name, job title and projects
      * (only their names). The projects should be ordered by name (ascending).
      * The output should be printed in the format given in the example.
      */
 
-    private void getEmployeeWithProject(){
+    private void getEmployeeWithProject() {
         Scanner scanner = new Scanner(System.in);
 
         int employeeId = Integer.parseInt(scanner.nextLine());
@@ -171,18 +173,50 @@ public class Engine implements Runnable {
         this.entityManager.getTransaction().begin();
         String query = "FROM Employee AS e WHERE e.id = :id";
         Employee employee = this.entityManager
-                .createQuery(query,Employee.class)
-                .setParameter("id",employeeId)
+                .createQuery(query, Employee.class)
+                .setParameter("id", employeeId)
                 .getSingleResult();
 
-        System.out.printf("%s %s - %s%n",employee.getFirstName(),employee.getLastName(),employee.getJobTitle());
+        System.out.printf("%s %s - %s%n", employee.getFirstName(), employee.getLastName(), employee.getJobTitle());
 
         this.entityManager
-                .createQuery("SELECT p FROM Employee as e JOIN e.projects as p WHERE e.id = :id ORDER BY p.name",Project.class)
-                .setParameter("id",employeeId)
+                .createQuery("SELECT p FROM Employee as e JOIN e.projects as p WHERE e.id = :id ORDER BY p.name", Project.class)
+                .setParameter("id", employeeId)
                 .getResultList()
-                .forEach(project -> System.out.printf("\t%s%n",project.getName()));
-        
+                .forEach(project -> System.out.printf("\t%s%n", project.getName()));
+
+        this.entityManager.getTransaction().commit();
+    }
+
+    /**
+     * 9.	Find Latest 10 Projects
+     * Write a program that prints the last 10 started projects.
+     * Print their name, description, start and end date and sort them by name lexicographically.
+     * For the output, check the format from the example.
+     */
+
+    private void findLatest10Projects() {
+        this.entityManager.getTransaction().begin();
+
+        String query = "SELECT p FROM Project as p ORDER BY  p.startDate";
+
+
+        this.entityManager
+                .createQuery(query,Project.class)
+                .setMaxResults(10)
+                .getResultList()
+                .stream()
+                .sorted(Comparator.comparing(Project::getName))
+                .forEach(project -> System.out.printf("Project name: %s\n" +
+                        " \tProject Description: %s\n" +
+                        " \tProject Start Date:%s\n" +
+                        " \tProject End Date: %s%n"
+                        ,project.getName()
+                        ,project.getDescription()
+                        ,project.getStartDate()
+                        ,project.getEndDate()
+                ));
+
         this.entityManager.getTransaction().commit();
     }
 }
