@@ -6,6 +6,8 @@ import entities.Town;
 import javax.persistence.EntityManager;
 import javax.persistence.NoResultException;
 import java.io.IOException;
+import java.math.BigDecimal;
+import java.math.MathContext;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Scanner;
@@ -20,7 +22,7 @@ public class Engine implements Runnable {
     }
 
     public void run() {
-        this.findLatest10Projects();
+        this.increaseSalaries();
     }
 
     /**
@@ -218,6 +220,43 @@ public class Engine implements Runnable {
                 ));
 
         this.entityManager.getTransaction().commit();
+    }
+
+    /**
+     * 10.	Increase Salaries
+     * Write a program that increases the salaries of all employees, who are in the
+     * Engineering,
+     * Tool Design,
+     * Marketing or
+     * Information Services
+     * departments by 12%.
+     * Then print the first name, the last name and the salary for the employees, whose salary was increased.
+     */
+
+    private void increaseSalaries(){
+
+        this.entityManager.getTransaction().begin();
+
+        List<Employee> employees = this.entityManager
+                .createQuery("SELECT e FROM Employee as e " +
+                        "JOIN e.department as d " +
+                        "WHERE d.name in ('Engineering','Tool Design','Marketing','Information Services')" +
+                        "ORDER BY e.id",Employee.class)
+                .getResultList();
+
+
+        employees.stream()
+                .forEach(employee -> {
+                    employee.setSalary(employee.getSalary().multiply(new BigDecimal("1.12")));
+                    System.out.printf("%s %s ($%.2f)%n"
+                    ,employee.getFirstName()
+                    ,employee.getLastName()
+                    ,employee.getSalary());
+                    this.entityManager.merge(employee);
+                });
+
+        this.entityManager.getTransaction().commit();
+
     }
 }
 
