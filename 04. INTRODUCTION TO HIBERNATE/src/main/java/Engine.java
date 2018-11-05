@@ -18,7 +18,7 @@ public class Engine implements Runnable {
     }
 
     public void run() {
-        this.addNewAddressAndUpdateEmploee();
+        this.addressWithEmployeeCount();
     }
 
     /**
@@ -130,6 +130,35 @@ public class Engine implements Runnable {
         this.entityManager.merge(employee);
 
         this.entityManager.getTransaction().commit();
+    }
+
+    /**
+     * 7.	Addresses with Employee Count
+     * Find all addresses, ordered by the number of employees who live there (descending), then by town id (ascending).
+     * Take only the first 10 addresses and print their address text, town name and employee count.
+     */
+
+    private void addressWithEmployeeCount(){
+        this.entityManager.getTransaction().begin();
+        String query = "SELECT a.text, t.name, count(emp)" +
+                "FROM Employee as emp " +
+                "JOIN emp.address as a " +
+                "JOIN a.town as t " +
+                "GROUP BY a.text, t.name " +
+                "ORDER BY count(emp) DESC ,t.id,a.id";
+
+       this.entityManager.createQuery(query,Object[].class)
+               .setMaxResults(10)
+               .getResultList()
+               .forEach(employee -> System.out.printf("%s %s - %d employees%n",employee[0],employee[1],employee[2]));
+
+
+
+
+
+
+
+
     }
 }
 
