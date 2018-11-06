@@ -22,7 +22,7 @@ public class Engine implements Runnable {
     }
 
     public void run() {
-        this.findEmployeesByFirstName();
+        this.employeesMaximumSalaries();
     }
 
     /**
@@ -313,7 +313,6 @@ public class Engine implements Runnable {
         //firstLettersInEmployeeFirstName
         String letters  = scanner.nextLine();
 
-        this.entityManager.getTransaction().begin();
 
         this.entityManager
                 .createQuery("FROM Employee as e WHERE upper(e.firstName) LIKE :letters",Employee.class)
@@ -325,6 +324,24 @@ public class Engine implements Runnable {
                 ,e.getJobTitle()
                 ,e.getSalary()));
 
+    }
+
+    /**
+     * 13.	Employees Maximum Salaries
+     * Write a program that finds the max salary for each department.
+     * Filter the departments, which max salaries are not in the range between 30000 and 70000.
+     */
+
+    private void employeesMaximumSalaries(){
+
+        this.entityManager
+                .createQuery("SELECT max(e.salary),d.name " +
+                        "FROM Employee as e " +
+                        "JOIN e.department as d " +
+                        "WHERE e.salary NOT BETWEEN 30000 and 70000" +
+                        "GROUP BY d.name ",Object[].class)
+                .getResultList()
+                .forEach(x-> System.out.printf("%s - %s%n",x[1],x[0]));
     }
 }
 
