@@ -23,4 +23,6 @@ public interface DbContext<T> {
 
     //this method will return record in db where id is equal to the given id
     T findById(long id) throws InvocationTargetException, SQLException, InstantiationException, IllegalAccessException, NoSuchMethodException;
+
+    boolean delete(String where) throws SQLException;
 }
