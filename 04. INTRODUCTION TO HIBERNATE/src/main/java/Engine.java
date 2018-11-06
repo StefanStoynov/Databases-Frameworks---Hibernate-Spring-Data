@@ -7,7 +7,6 @@ import javax.persistence.EntityManager;
 import javax.persistence.NoResultException;
 import java.io.IOException;
 import java.math.BigDecimal;
-import java.math.MathContext;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Scanner;
@@ -252,10 +251,43 @@ public class Engine implements Runnable {
                     ,employee.getFirstName()
                     ,employee.getLastName()
                     ,employee.getSalary());
-                    this.entityManager.merge(employee);
                 });
 
         this.entityManager.getTransaction().commit();
+
+    }
+
+    /**
+     * 11.	Remove Towns
+     * Write a program that deletes a town, which name is given as an input.
+     * The program should delete all addresses that are in the given town.
+     * Print on the console the number of addresses that were deleted. Check the example for the output format.
+     */
+
+    private void removeTowns(){
+        Scanner scanner = new Scanner(System.in);
+
+        String townName = scanner.nextLine();
+
+        this.entityManager.getTransaction().begin();
+        List<Address>addressesToDelete = this.entityManager
+                .createQuery("SELECT a from Address as a JOIN a.town as t WHERE t.name = :name",Address.class)
+                .setParameter("name", townName)
+                .getResultList();
+        int numberOfDeletedAddresses = addressesToDelete.size();
+
+        addressesToDelete.stream().forEach(address -> {
+            this.entityManager.remove(address);
+            this.entityManager.flush();
+        });
+
+        Town removedTown = this.entityManager.createQuery("FROM Town WHERE name = :name",Town.class)
+                .setParameter("name",townName).getSingleResult();
+
+        this.entityManager.remove(removedTown);
+        this.entityManager.flush();
+        System.out.printf("%d address in %s deleted",numberOfDeletedAddresses,townName);
+
 
     }
 }
