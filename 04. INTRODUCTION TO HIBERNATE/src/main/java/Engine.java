@@ -22,7 +22,7 @@ public class Engine implements Runnable {
     }
 
     public void run() {
-        this.removeTowns();
+        this.findEmployeesByFirstName();
     }
 
     /**
@@ -297,6 +297,33 @@ public class Engine implements Runnable {
         this.entityManager.getTransaction().commit();
 
         System.out.printf("%d address in %s deleted",numberOfDeletedAddresses,townName);
+
+    }
+
+    /**
+     * 12.	Find Employees by First Name
+     * Write a program that finds all employees, whose first name starts with a pattern given as an input from the
+     * console. Print their first and last names, their job title and salary in the format given in the example below.
+     */
+
+    private void findEmployeesByFirstName(){
+
+        Scanner scanner = new Scanner(System.in);
+
+        //firstLettersInEmployeeFirstName
+        String letters  = scanner.nextLine();
+
+        this.entityManager.getTransaction().begin();
+
+        this.entityManager
+                .createQuery("FROM Employee as e WHERE upper(e.firstName) LIKE :letters",Employee.class)
+                .setParameter("letters",letters+"%")
+                .getResultList()
+                .forEach(e -> System.out.printf("%s %s - %s - ($%.2f)%n"
+                ,e.getFirstName()
+                ,e.getLastName()
+                ,e.getJobTitle()
+                ,e.getSalary()));
 
     }
 }
