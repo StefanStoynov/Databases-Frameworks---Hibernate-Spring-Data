@@ -7,6 +7,7 @@ import javax.persistence.EntityManager;
 import javax.persistence.NoResultException;
 import java.io.IOException;
 import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Scanner;
@@ -21,7 +22,7 @@ public class Engine implements Runnable {
     }
 
     public void run() {
-        this.increaseSalaries();
+        this.removeTowns();
     }
 
     /**
@@ -270,24 +271,32 @@ public class Engine implements Runnable {
         String townName = scanner.nextLine();
 
         this.entityManager.getTransaction().begin();
+
+        Town removedTown = this.entityManager
+                .createQuery("FROM Town WHERE name = :name",Town.class)
+                .setParameter("name",townName)
+                .getSingleResult();
+
         List<Address>addressesToDelete = this.entityManager
                 .createQuery("SELECT a from Address as a JOIN a.town as t WHERE t.name = :name",Address.class)
                 .setParameter("name", townName)
                 .getResultList();
+
         int numberOfDeletedAddresses = addressesToDelete.size();
+
+        this.entityManager
+                .createQuery("UPDATE Employee AS e SET e.address = null WHERE e.address in :addresses")
+                .setParameter("addresses",addressesToDelete)
+                .executeUpdate();
 
         addressesToDelete.stream().forEach(address -> {
             this.entityManager.remove(address);
-            this.entityManager.flush();
         });
 
-        Town removedTown = this.entityManager.createQuery("FROM Town WHERE name = :name",Town.class)
-                .setParameter("name",townName).getSingleResult();
-
         this.entityManager.remove(removedTown);
-        this.entityManager.flush();
-        System.out.printf("%d address in %s deleted",numberOfDeletedAddresses,townName);
+        this.entityManager.getTransaction().commit();
 
+        System.out.printf("%d address in %s deleted",numberOfDeletedAddresses,townName);
 
     }
 }
