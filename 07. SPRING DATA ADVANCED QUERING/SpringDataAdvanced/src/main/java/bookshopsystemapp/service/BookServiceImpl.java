@@ -101,6 +101,28 @@ public class BookServiceImpl implements BookService {
         return books.stream().map(b-> b.getTitle()).collect(Collectors.toList());
     }
 
+    @Override
+    public List<String> getAllBooksByPrice() {
+        BigDecimal lowerNumber = BigDecimal.valueOf(5);
+        BigDecimal upperNumber = BigDecimal.valueOf(40);
+
+        List<Book>books = this.bookRepository.findAllByPriceLessThanOrPriceGreaterThan(lowerNumber,upperNumber);
+        return books
+                .stream()
+                .map(book -> String.format("%s - $%.2f",book.getTitle(), book.getPrice())).collect(Collectors.toList());
+    }
+
+    @Override
+    public List<String> getAllBooksByCopies() {
+        EditionType editionType = EditionType.valueOf("gold".toUpperCase());
+        Integer treshholdForGoldenEdition = 5000;
+        List<Book> books = this
+                .bookRepository
+                .findAllByEditionTypeAndCopiesLessThan(editionType,treshholdForGoldenEdition);
+
+        return books.stream().map(b-> b.getTitle()).collect(Collectors.toList());
+    }
+
     private Author getRandomAuthor() {
         Random random = new Random();
 

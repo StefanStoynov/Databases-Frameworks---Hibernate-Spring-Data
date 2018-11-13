@@ -36,7 +36,22 @@ public class BookshopController implements CommandLineRunner {
         Write a program that prints the titles of all books, for which the age restriction
         matches the given input (minor, teen or adult). Ignore casing of the input.
          */
+
         // this.bookService.getAllBooksByAgeRestriction(this.scanner.nextLine()).stream().forEach(b -> System.out.println(b));
+
+        /*
+        2.	Golden Books
+        Write a program that prints the titles of the golden edition books, which have less than 5000 copies.
+         */
+
+        // this.bookService.getAllBooksByCopies().stream().forEach(b-> System.out.println(b));
+
+        /*
+        3.	Books by Price
+        Write a program that prints the titles and prices of books with price lower than 5 and higher than 40.
+         */
+
+        this.bookService.getAllBooksByPrice().forEach(System.out::println);
 
     }
 }
