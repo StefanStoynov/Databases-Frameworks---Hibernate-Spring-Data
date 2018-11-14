@@ -7,13 +7,16 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
+import java.util.Comparator;
+import java.util.List;
+import java.util.stream.Collectors;
 
 
 @Service
 public class AuthorServiceImpl implements AuthorService {
 
-    private final static String AUTHORS_PATH = "C:\\Users\\sstoy\\Desktop\\SoftUni\\Git Hub\\Databases-Frameworks---" +
-            "Hibernate-Spring-Data\\06. SPRING DATA INTRO\\src\\main\\resources\\files\\authors.txt";
+    private final static String AUTHORS_PATH = "C:\\Users\\sstoy\\Desktop\\SoftUni\\Git Hub\\Databases-Frameworks" +
+            "---Hibernate-Spring-Data\\06. SPRING DATA INTRO\\src\\main\\resources\\files\\authors.txt";
     private final AuthorRepository authorRepository;
     private final FileUtil fileUtil;
 
@@ -41,5 +44,20 @@ public class AuthorServiceImpl implements AuthorService {
 
             this.authorRepository.saveAndFlush(author);
         }
+    }
+
+    @Override
+    public Author findByNames(String firstName, String lastName) {
+        return this.authorRepository.findByFirstNameAndLastName(firstName,lastName);
+    }
+
+    @Override
+    public List<Author> getAuthorsOrderByBookNumber() {
+
+        return authorRepository
+                .findAll()
+                .stream()
+                .sorted(Comparator.comparing(author -> -author.getBooks().size()))
+                .collect(Collectors.toList());
     }
 }
