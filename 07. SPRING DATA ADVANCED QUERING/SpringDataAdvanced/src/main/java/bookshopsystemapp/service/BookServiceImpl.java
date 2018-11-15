@@ -89,7 +89,7 @@ public class BookServiceImpl implements BookService {
     public Set<String> getAllTitleAndPriceWithBookBefore(LocalDate date) {
         List<Book> books = this.bookRepository.findAllByReleaseDateBefore(date);
 
-        return books.stream().map(b-> String.format("Title:%s, Edition Type:%s, Price:%.2f",
+        return books.stream().map(b -> String.format("Title:%s, Edition Type:%s, Price:%.2f",
                 b.getTitle(),
                 b.getEditionType(),
                 b.getPrice())).collect(Collectors.toSet());
@@ -100,9 +100,9 @@ public class BookServiceImpl implements BookService {
     public List<String> getAllBooksByAgeRestriction(String ageRestrictionString) {
         AgeRestriction ageRestriction = AgeRestriction.valueOf(ageRestrictionString.toUpperCase());
 
-        List<Book>books = this.bookRepository.findAllByAgeRestriction(ageRestriction);
+        List<Book> books = this.bookRepository.findAllByAgeRestriction(ageRestriction);
 
-        return books.stream().map(b-> b.getTitle()).collect(Collectors.toList());
+        return books.stream().map(b -> b.getTitle()).collect(Collectors.toList());
     }
 
     @Override
@@ -110,15 +110,15 @@ public class BookServiceImpl implements BookService {
         BigDecimal lowerNumber = BigDecimal.valueOf(5);
         BigDecimal upperNumber = BigDecimal.valueOf(40);
 
-        List<Book>books = this.bookRepository.findAllByPriceLessThanOrPriceGreaterThan(lowerNumber,upperNumber);
+        List<Book> books = this.bookRepository.findAllByPriceLessThanOrPriceGreaterThan(lowerNumber, upperNumber);
         return books
                 .stream()
-                .map(book -> String.format("%s - $%.2f",book.getTitle(), book.getPrice())).collect(Collectors.toList());
+                .map(book -> String.format("%s - $%.2f", book.getTitle(), book.getPrice())).collect(Collectors.toList());
     }
 
     @Override
     public List<String> getBooksNotInThisYear(LocalDate before, LocalDate after) {
-        List<Book> books = this.bookRepository.findAllByReleaseDateBeforeOrReleaseDateAfter(before,after);
+        List<Book> books = this.bookRepository.findAllByReleaseDateBeforeOrReleaseDateAfter(before, after);
 
         return books.stream().map(Book::getTitle).collect(Collectors.toList());
     }
@@ -130,12 +130,17 @@ public class BookServiceImpl implements BookService {
         Integer treshholdForGoldenEdition = 5000;
         List<Book> books = this
                 .bookRepository
-                .findAllByEditionTypeAndCopiesLessThan(editionType,treshholdForGoldenEdition);
+                .findAllByEditionTypeAndCopiesLessThan(editionType, treshholdForGoldenEdition);
+
+        return books.stream().map(b -> b.getTitle()).collect(Collectors.toList());
+    }
+
+    @Override
+    public List<String> getBooksContaining(String input) {
+        List<Book>books = this.bookRepository.findAllByTitleContains(input);
 
         return books.stream().map(b-> b.getTitle()).collect(Collectors.toList());
     }
-
-
 
     private Author getRandomAuthor() {
         Random random = new Random();

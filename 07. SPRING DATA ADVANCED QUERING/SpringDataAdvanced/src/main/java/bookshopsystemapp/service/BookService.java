@@ -20,4 +20,6 @@ public interface BookService {
     List<String> getAllBooksByPrice();
 
     List<String> getBooksNotInThisYear(LocalDate before, LocalDate after);
+
+    List<String> getBooksContaining(String input);
 }

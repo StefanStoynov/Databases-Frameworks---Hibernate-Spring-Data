@@ -35,7 +35,7 @@ public class BookshopController implements CommandLineRunner {
         //this.categoryService.seedCategories();
         //this.bookService.seedBooks();
 
-        this.authorsSearch();
+        this.bookSearch();
 
     }
 
@@ -98,6 +98,14 @@ public class BookshopController implements CommandLineRunner {
     private void authorsSearch(){
         String firstNameEnd = this.scanner.nextLine();
         this.authorService.getByEndWithFirstName(firstNameEnd).forEach(System.out::println);
+    }
+
+    /**
+     * 7.	Books Search
+     * Write a program that prints the titles of books, which contain a given string (regardless of the casing).
+     */
+    private void bookSearch(){
+        this.bookService.getBooksContaining(this.scanner.nextLine()).forEach(System.out::println);
     }
 }
 
