@@ -32,5 +32,7 @@ public interface BookRepository extends JpaRepository<Book, Integer> {
     @Query("SELECT b FROM bookshopsystemapp.domain.entities.Book as b JOIN b.author as a WHERE a.lastName like :wildCard")
     List<Book> findAllByAuthorLastNameEndingWith(@Param("wildCard")String wildCard);
 
+    List<Book> findAll();
+
 
 }

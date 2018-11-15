@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Controller;
 
+import javax.persistence.criteria.CriteriaBuilder;
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
@@ -35,7 +36,7 @@ public class BookshopController implements CommandLineRunner {
         //this.categoryService.seedCategories();
         //this.bookService.seedBooks();
 
-        this.bookTitlesSearch();
+        this.countBooks();
 
     }
 
@@ -117,6 +118,16 @@ public class BookshopController implements CommandLineRunner {
         this.bookService
                 .getBooksWrittenByAuthorsLastNameEndsWith(this.scanner.nextLine())
                 .forEach(System.out::println);
+    }
+
+    /**
+     * 9.	Count Books
+     * Write a program that prints the number of books, whose title is longer or equal than a given number.
+     */
+
+    private void countBooks(){
+        int number = Integer.parseInt(this.scanner.nextLine());
+        System.out.println(this.bookService.countOfBooksWithLongerThenGivenNumberTitle(number));
     }
 }
 

@@ -153,6 +153,16 @@ public class BookServiceImpl implements BookService {
                 .collect(Collectors.toList());
     }
 
+    @Override
+    public int countOfBooksWithLongerThenGivenNumberTitle(int number) {
+        List<Book> allBooks = this.bookRepository.findAll();
+        List<Book> booksWithCorrectLengthTitle = allBooks
+                .stream()
+                .filter(b-> b.getTitle().length()>= number)
+                .collect(Collectors.toList());
+        return booksWithCorrectLengthTitle.size();
+    }
+
     private Author getRandomAuthor() {
         Random random = new Random();
 

@@ -1,5 +1,7 @@
 package bookshopsystemapp.service;
 
+import bookshopsystemapp.domain.entities.Book;
+
 import java.io.IOException;
 import java.time.LocalDate;
 import java.util.List;
@@ -24,6 +26,8 @@ public interface BookService {
     List<String> getBooksContaining(String input);
 
     List<String> getBooksWrittenByAuthorsLastNameEndsWith(String input);
+
+    int countOfBooksWithLongerThenGivenNumberTitle(int number);
 
 
 }
