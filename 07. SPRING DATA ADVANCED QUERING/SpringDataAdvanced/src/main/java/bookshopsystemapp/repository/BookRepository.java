@@ -4,6 +4,8 @@ import bookshopsystemapp.domain.entities.AgeRestriction;
 import bookshopsystemapp.domain.entities.Book;
 import bookshopsystemapp.domain.entities.EditionType;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.math.BigDecimal;
@@ -26,6 +28,9 @@ public interface BookRepository extends JpaRepository<Book, Integer> {
     List<Book> findAllByReleaseDateBeforeOrReleaseDateAfter(LocalDate before, LocalDate after);
 
     List<Book> findAllByTitleContains(String input);
+
+    @Query("SELECT b FROM bookshopsystemapp.domain.entities.Book as b JOIN b.author as a WHERE a.lastName like :wildCard")
+    List<Book> findAllByAuthorLastNameEndingWith(@Param("wildCard")String wildCard);
 
 
 }

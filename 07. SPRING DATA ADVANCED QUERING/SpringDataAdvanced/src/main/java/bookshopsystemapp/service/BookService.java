@@ -22,4 +22,8 @@ public interface BookService {
     List<String> getBooksNotInThisYear(LocalDate before, LocalDate after);
 
     List<String> getBooksContaining(String input);
+
+    List<String> getBooksWrittenByAuthorsLastNameEndsWith(String input);
+
+
 }

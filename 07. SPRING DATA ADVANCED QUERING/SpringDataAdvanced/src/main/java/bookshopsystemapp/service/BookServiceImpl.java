@@ -142,6 +142,17 @@ public class BookServiceImpl implements BookService {
         return books.stream().map(b-> b.getTitle()).collect(Collectors.toList());
     }
 
+    @Override
+    public List<String> getBooksWrittenByAuthorsLastNameEndsWith(String input) {
+        String wildCard = input+"%";
+        List<Book> books = this.bookRepository.findAllByAuthorLastNameEndingWith(wildCard);
+
+        return books
+                .stream()
+                .map(b->String.format("%s (%s %s)",b.getTitle(),b.getAuthor().getFirstName(),b.getAuthor().getLastName()))
+                .collect(Collectors.toList());
+    }
+
     private Author getRandomAuthor() {
         Random random = new Random();
 
