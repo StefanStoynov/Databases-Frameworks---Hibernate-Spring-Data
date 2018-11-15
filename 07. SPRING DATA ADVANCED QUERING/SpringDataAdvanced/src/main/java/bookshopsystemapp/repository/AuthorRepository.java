@@ -9,4 +9,6 @@ import java.util.Optional;
 
 @Repository
 public interface AuthorRepository extends JpaRepository<Author, Integer> {
+
+    List<Author> findAllByFirstNameIsEndingWith(String end);
 }

@@ -7,6 +7,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class AuthorServiceImpl implements AuthorService {
@@ -39,5 +41,18 @@ public class AuthorServiceImpl implements AuthorService {
 
             this.authorRepository.saveAndFlush(author);
         }
+
+
+    }
+
+    @Override
+    public List<String> getByEndWithFirstName(String end) {
+        List<Author> authors = this.authorRepository.findAllByFirstNameIsEndingWith(end);
+
+        return authors
+                .stream()
+                .map(a-> String.format("%s %s",a.getFirstName(), a.getLastName()))
+                .collect(Collectors.toList());
+
     }
 }

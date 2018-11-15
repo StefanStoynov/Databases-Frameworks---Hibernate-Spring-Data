@@ -35,7 +35,7 @@ public class BookshopController implements CommandLineRunner {
         //this.categoryService.seedCategories();
         //this.bookService.seedBooks();
 
-        this.booksReleasedBeforeDate();
+        this.authorsSearch();
 
     }
 
@@ -46,8 +46,7 @@ public class BookshopController implements CommandLineRunner {
      */
     private void bookTitlesByAgeRestriction() {
         this.bookService.getAllBooksByAgeRestriction(this.scanner.nextLine())
-                .stream()
-                .forEach(b -> System.out.println(b));
+                .forEach(System.out::println);
     }
 
     /**
@@ -57,8 +56,7 @@ public class BookshopController implements CommandLineRunner {
      */
     private void goldenBooks() {
         this.bookService.getAllBooksByCopies()
-                .stream()
-                .forEach(b -> System.out.println(b));
+                .forEach(System.out::println);
     }
 
     /**
@@ -91,6 +89,15 @@ public class BookshopController implements CommandLineRunner {
         DateTimeFormatter formattedDate = DateTimeFormatter.ofPattern("dd-MM-yyyy");
         LocalDate localDate = LocalDate.parse(date,formattedDate);
         this.bookService.getAllTitleAndPriceWithBookBefore(localDate).forEach(System.out::println);
+    }
+
+    /**
+     * 6.	Authors Search
+     * Write a program that prints the names of those authors, whose first name ends with a given string.
+     */
+    private void authorsSearch(){
+        String firstNameEnd = this.scanner.nextLine();
+        this.authorService.getByEndWithFirstName(firstNameEnd).forEach(System.out::println);
     }
 }
 
