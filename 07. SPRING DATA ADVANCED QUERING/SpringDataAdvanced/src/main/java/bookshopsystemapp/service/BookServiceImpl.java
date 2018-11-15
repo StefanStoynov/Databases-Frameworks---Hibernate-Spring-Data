@@ -86,11 +86,15 @@ public class BookServiceImpl implements BookService {
     }
 
     @Override
-    public Set<String> getAllAuthorsWithBookBefore() {
-        List<Book> books = this.bookRepository.findAllByReleaseDateBefore(LocalDate.parse("1990-01-01"));
+    public Set<String> getAllTitleAndPriceWithBookBefore(LocalDate date) {
+        List<Book> books = this.bookRepository.findAllByReleaseDateBefore(date);
 
-        return books.stream().map(b -> String.format("%s %s", b.getAuthor().getFirstName(), b.getAuthor().getLastName())).collect(Collectors.toSet());
+        return books.stream().map(b-> String.format("Title:%s, Edition Type:%s, Price:%.2f",
+                b.getTitle(),
+                b.getEditionType(),
+                b.getPrice())).collect(Collectors.toSet());
     }
+
 
     @Override
     public List<String> getAllBooksByAgeRestriction(String ageRestrictionString) {

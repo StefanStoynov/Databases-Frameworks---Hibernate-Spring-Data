@@ -11,7 +11,7 @@ public interface BookService {
 
     List<String> getAllBooksTitlesAfter();
 
-    Set<String> getAllAuthorsWithBookBefore();
+    Set<String> getAllTitleAndPriceWithBookBefore(LocalDate date);
 
     List<String> getAllBooksByAgeRestriction(String ageRestrictionString);
 

@@ -7,7 +7,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Controller;
 
+import java.text.SimpleDateFormat;
 import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.Scanner;
 
 @Controller
@@ -33,7 +35,7 @@ public class BookshopController implements CommandLineRunner {
         //this.categoryService.seedCategories();
         //this.bookService.seedBooks();
 
-        this.notReleasedBooks();
+        this.booksReleasedBeforeDate();
 
     }
 
@@ -78,4 +80,17 @@ public class BookshopController implements CommandLineRunner {
         LocalDate after = LocalDate.parse(year+"-12-31");
         this.bookService.getBooksNotInThisYear(before,after).forEach(System.out::println);
     }
+
+    /**
+     * 5.	Books Released Before Date
+     * Write a program that prints the title, the edition type and the price of books, which are released before a
+     * given date. The date will be in the format dd-MM-yyyy.
+     */
+    private void booksReleasedBeforeDate(){
+        String date = this.scanner.nextLine();
+        DateTimeFormatter formattedDate = DateTimeFormatter.ofPattern("dd-MM-yyyy");
+        LocalDate localDate = LocalDate.parse(date,formattedDate);
+        this.bookService.getAllTitleAndPriceWithBookBefore(localDate).forEach(System.out::println);
+    }
 }
+
