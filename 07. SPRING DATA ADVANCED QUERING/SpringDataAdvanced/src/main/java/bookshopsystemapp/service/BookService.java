@@ -1,6 +1,7 @@
 package bookshopsystemapp.service;
 
 import java.io.IOException;
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Set;
 
@@ -17,4 +18,6 @@ public interface BookService {
     List<String> getAllBooksByCopies();
 
     List<String> getAllBooksByPrice();
+
+    List<String> getBooksNotInThisYear(LocalDate before, LocalDate after);
 }

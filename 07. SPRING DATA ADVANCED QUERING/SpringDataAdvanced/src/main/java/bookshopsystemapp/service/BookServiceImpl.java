@@ -113,6 +113,14 @@ public class BookServiceImpl implements BookService {
     }
 
     @Override
+    public List<String> getBooksNotInThisYear(LocalDate before, LocalDate after) {
+        List<Book> books = this.bookRepository.findAllByReleaseDateBeforeOrReleaseDateAfter(before,after);
+
+        return books.stream().map(Book::getTitle).collect(Collectors.toList());
+    }
+
+
+    @Override
     public List<String> getAllBooksByCopies() {
         EditionType editionType = EditionType.valueOf("gold".toUpperCase());
         Integer treshholdForGoldenEdition = 5000;
@@ -122,6 +130,8 @@ public class BookServiceImpl implements BookService {
 
         return books.stream().map(b-> b.getTitle()).collect(Collectors.toList());
     }
+
+
 
     private Author getRandomAuthor() {
         Random random = new Random();
