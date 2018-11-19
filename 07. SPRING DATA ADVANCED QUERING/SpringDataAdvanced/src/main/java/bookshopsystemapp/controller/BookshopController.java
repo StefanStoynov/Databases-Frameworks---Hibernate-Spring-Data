@@ -36,7 +36,7 @@ public class BookshopController implements CommandLineRunner {
         //this.categoryService.seedCategories();
         //this.bookService.seedBooks();
 
-        this.countBooks();
+        this.totalBookCopies();
 
     }
 
@@ -128,6 +128,16 @@ public class BookshopController implements CommandLineRunner {
     private void countBooks(){
         int number = Integer.parseInt(this.scanner.nextLine());
         System.out.println(this.bookService.countOfBooksWithLongerThenGivenNumberTitle(number));
+    }
+
+    /**
+     * 10.	Total Book Copies
+     * Write a program that prints the total number of book copies by author.
+     * Order the results descending by total book copies.
+     */
+
+    private void totalBookCopies(){
+        this.bookService.getAuthorsNameAndCountOfBooks().forEach(b-> System.out.printf("%s %s %s%n",b[0],b[1],b[2]));
     }
 }
 

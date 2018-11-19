@@ -163,6 +163,12 @@ public class BookServiceImpl implements BookService {
         return booksWithCorrectLengthTitle.size();
     }
 
+    @Override
+    public List<Object[]> getAuthorsNameAndCountOfBooks() {
+
+        return this.bookRepository.findAllByBookCopies();
+    }
+
     private Author getRandomAuthor() {
         Random random = new Random();
 

@@ -29,5 +29,5 @@ public interface BookService {
 
     int countOfBooksWithLongerThenGivenNumberTitle(int number);
 
-
+    List<Object[]> getAuthorsNameAndCountOfBooks();
 }
