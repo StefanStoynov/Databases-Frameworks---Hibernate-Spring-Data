@@ -36,7 +36,7 @@ public class BookshopController implements CommandLineRunner {
         //this.categoryService.seedCategories();
         //this.bookService.seedBooks();
 
-        this.totalBookCopies();
+        this.bookByTitle();
 
     }
 
@@ -138,6 +138,19 @@ public class BookshopController implements CommandLineRunner {
 
     private void totalBookCopies(){
         this.bookService.getAuthorsNameAndCountOfBooks().forEach(b-> System.out.printf("%s %s %s%n",b[0],b[1],b[2]));
+    }
+
+    /**
+     * 11.	Reduced Book
+     * Write a program that prints information (title, edition type, age restriction and price) for a book by given
+     * title. When retrieving the book information select only those fields and do NOT include any other
+     * information in the returned result.
+     */
+
+    private void bookByTitle(){
+        String title = this.scanner.nextLine();
+
+        this.bookService.getBookByTitle(title).forEach(System.out::println);
     }
 }
 

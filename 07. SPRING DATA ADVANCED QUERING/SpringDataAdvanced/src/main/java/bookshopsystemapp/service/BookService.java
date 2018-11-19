@@ -30,4 +30,6 @@ public interface BookService {
     int countOfBooksWithLongerThenGivenNumberTitle(int number);
 
     List<Object[]> getAuthorsNameAndCountOfBooks();
+
+    List<String> getBookByTitle(String title);
 }

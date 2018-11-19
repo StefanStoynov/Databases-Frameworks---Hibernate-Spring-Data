@@ -169,6 +169,19 @@ public class BookServiceImpl implements BookService {
         return this.bookRepository.findAllByBookCopies();
     }
 
+    @Override
+    public List<String> getBookByTitle(String title) {
+        List<Book> books = this.bookRepository.getBooksByTitle(title);
+
+        return books.stream()
+                .map(book -> String.format("%s %s %s %.2f",
+                    book.getTitle(),
+                    book.getEditionType(),
+                    book.getAgeRestriction(),
+                    book.getPrice()))
+                .collect(Collectors.toList());
+    }
+
     private Author getRandomAuthor() {
         Random random = new Random();
 
