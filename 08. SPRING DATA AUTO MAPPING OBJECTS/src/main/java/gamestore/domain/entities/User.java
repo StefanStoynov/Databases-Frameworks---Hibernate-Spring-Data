@@ -6,7 +6,7 @@ import java.util.Set;
 @Entity(name = "users")
 public class User extends BaseEntity {
 
-    private String emial;
+    private String email;
     private String fullName;
     private String password;
     private Set<Game> games;
@@ -17,8 +17,8 @@ public class User extends BaseEntity {
 
     //<editor-fold desc="Getters">
     @Column(name = "email", nullable = false, unique = true)
-    public String getEmial() {
-        return this.emial;
+    public String getEmail() {
+        return this.email;
     }
 
     @Column(name = "full_name")
@@ -48,8 +48,8 @@ public class User extends BaseEntity {
     //</editor-fold>
 
     //<editor-fold desc="Setters">
-    public void setEmial(String emial) {
-        this.emial = emial;
+    public void setEmail(String email) {
+        this.email = email;
     }
 
     public void setFullName(String fullName) {
