@@ -74,10 +74,7 @@ public class GameStoreController implements CommandLineRunner {
                             System.out.println("Cannot add Game. No user was logged in.");
                         }
                     break;
-                case "EditGame":
-                    break;
-                case "DeleteGame":
-                    break;
+
             }
         }
     }
