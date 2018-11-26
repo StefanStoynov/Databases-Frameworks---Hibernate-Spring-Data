@@ -38,7 +38,12 @@ public class Product extends BaseEntity {
         return this.buyer;
     }
 
-    @ManyToMany(targetEntity = Category.class, mappedBy = "products")
+    @ManyToMany(targetEntity = Category.class)
+    @JoinTable(
+            name = "category_products",
+            joinColumns = @JoinColumn(name = "product_id", referencedColumnName = "id"),
+            inverseJoinColumns = @JoinColumn(name = "category_id", referencedColumnName = "id")
+    )
     public List<Category> getCategories() {
         return this.categories;
     }
