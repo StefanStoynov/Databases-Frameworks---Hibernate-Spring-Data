@@ -5,6 +5,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Controller;
 import productshop.domain.dtos.CategorySeedDto;
+import productshop.domain.dtos.ProductInRangeDto;
 import productshop.domain.dtos.ProductSeedDto;
 import productshop.domain.dtos.UserSeedDto;
 import productshop.service.CategoryService;
@@ -13,6 +14,8 @@ import productshop.service.UserService;
 import productshop.util.FileIOUtil;
 
 import java.io.IOException;
+import java.math.BigDecimal;
+import java.util.List;
 
 @Controller
 public class ProductShopController implements CommandLineRunner {
@@ -38,15 +41,16 @@ public class ProductShopController implements CommandLineRunner {
 
     @Override
     public void run(String... args) throws Exception {
-        this.seedUsers();
-        this.seedCategories();
-        this.seedProducts();
+        //this.seedUsers();
+        // this.seedCategories();
+        // this.seedProducts();
+        this.productsInRange();
     }
 
     private void seedUsers() throws IOException {
         String usersFileContent = this.fileIOUtil.readFile(USER_FILE_PATH);
 
-        UserSeedDto[]userSeedDtos = this.gson.fromJson(usersFileContent, UserSeedDto[].class);
+        UserSeedDto[] userSeedDtos = this.gson.fromJson(usersFileContent, UserSeedDto[].class);
 
         this.userService.seedUsers(userSeedDtos);
     }
@@ -54,7 +58,7 @@ public class ProductShopController implements CommandLineRunner {
     private void seedCategories() throws IOException {
         String categoriesFileContent = this.fileIOUtil.readFile(CATEGORY_FILE_PATH);
 
-        CategorySeedDto[]categorySeedDtos = this.gson.fromJson(categoriesFileContent, CategorySeedDto[].class);
+        CategorySeedDto[] categorySeedDtos = this.gson.fromJson(categoriesFileContent, CategorySeedDto[].class);
 
         this.categoryService.seedCategories(categorySeedDtos);
     }
@@ -62,8 +66,16 @@ public class ProductShopController implements CommandLineRunner {
     private void seedProducts() throws IOException {
         String productFileContent = this.fileIOUtil.readFile(PRODUCT_FILE_PATH);
 
-        ProductSeedDto[] productSeedDtos = this.gson.fromJson(productFileContent,ProductSeedDto[].class);
+        ProductSeedDto[] productSeedDtos = this.gson.fromJson(productFileContent, ProductSeedDto[].class);
 
         this.productService.seedProducts(productSeedDtos);
+    }
+
+    private void productsInRange(){
+        List<ProductInRangeDto> productInRangeDtos= this.productService.getProductsInRange(BigDecimal.valueOf(500), BigDecimal.valueOf(1000));
+
+        String productInRangeJson = this.gson.toJson(productInRangeDtos);
+
+        System.out.println(productInRangeJson);
     }
 }

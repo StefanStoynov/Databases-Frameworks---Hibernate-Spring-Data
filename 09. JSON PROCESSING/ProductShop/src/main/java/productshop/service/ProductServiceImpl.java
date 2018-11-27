@@ -2,6 +2,7 @@ package productshop.service;
 
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
+import productshop.domain.dtos.ProductInRangeDto;
 import productshop.domain.dtos.ProductSeedDto;
 import productshop.domain.entities.Category;
 import productshop.domain.entities.Product;
@@ -11,6 +12,7 @@ import productshop.repository.ProductRepository;
 import productshop.repository.UserRepository;
 import productshop.util.ValidatorUtil;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
@@ -55,6 +57,20 @@ public class ProductServiceImpl implements ProductService {
         }
     }
 
+    @Override
+    public List<ProductInRangeDto> getProductsInRange(BigDecimal lower, BigDecimal higher) {
+        List<Product> entities = this.productRepository.findAllByPriceBetweenAndBuyerOrderByPrice(lower, higher, null);
+
+        List<ProductInRangeDto> productInRangeDtos = new ArrayList<>();
+
+        for (Product entity : entities) {
+            ProductInRangeDto productInRangeDto = this.modelMapper.map(entity, ProductInRangeDto.class);
+            productInRangeDto.setSeller(String.format("%s %s",entity.getSeller().getFirstName(), entity.getSeller().getLastName()));
+            productInRangeDtos.add(productInRangeDto);
+        }
+        return productInRangeDtos;
+    }
+
     private User getRandomUser() {
         Random random = new Random();
 
@@ -74,4 +90,5 @@ public class ProductServiceImpl implements ProductService {
 
         return categories;
     }
+
 }
