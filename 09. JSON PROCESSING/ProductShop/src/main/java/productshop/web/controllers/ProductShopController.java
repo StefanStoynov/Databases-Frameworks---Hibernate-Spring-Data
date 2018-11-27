@@ -13,8 +13,11 @@ import productshop.service.ProductService;
 import productshop.service.UserService;
 import productshop.util.FileIOUtil;
 
-import java.io.IOException;
+import java.io.*;
 import java.math.BigDecimal;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.List;
 
 @Controller
@@ -71,11 +74,14 @@ public class ProductShopController implements CommandLineRunner {
         this.productService.seedProducts(productSeedDtos);
     }
 
-    private void productsInRange(){
+    private void productsInRange() throws IOException {
         List<ProductInRangeDto> productInRangeDtos= this.productService.getProductsInRange(BigDecimal.valueOf(500), BigDecimal.valueOf(1000));
 
         String productInRangeJson = this.gson.toJson(productInRangeDtos);
 
-        System.out.println(productInRangeJson);
+        BufferedWriter writer = new BufferedWriter(new FileWriter("C:\\Users\\sstoy\\Desktop\\SoftUni\\Git Hub\\Databases-Frameworks---Hibernate-Spring-Data\\09. JSON PROCESSING\\ProductShop\\src\\main\\resources\\output\\products-in-range.json"));
+
+        writer.write(productInRangeJson);
+        writer.close();
     }
 }
