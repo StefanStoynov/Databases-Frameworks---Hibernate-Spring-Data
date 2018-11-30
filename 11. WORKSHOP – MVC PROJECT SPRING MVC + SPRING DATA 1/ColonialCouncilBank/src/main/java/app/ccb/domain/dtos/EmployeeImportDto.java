@@ -4,7 +4,6 @@ import com.google.gson.annotations.SerializedName;
 
 import javax.validation.constraints.NotNull;
 import java.math.BigDecimal;
-import java.time.LocalDate;
 
 public class EmployeeImportDto {
     @SerializedName("full_name")

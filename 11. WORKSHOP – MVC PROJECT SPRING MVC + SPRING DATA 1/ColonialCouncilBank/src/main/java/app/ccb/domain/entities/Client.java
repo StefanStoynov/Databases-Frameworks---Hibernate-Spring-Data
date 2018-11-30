@@ -1,22 +1,24 @@
 package app.ccb.domain.entities;
 
 import javax.persistence.*;
+import java.util.ArrayList;
 import java.util.List;
 
 @Entity(name = "clients")
 public class Client extends BaseEntity{
 
-    private String full_name;
+    private String fullName;
     private Integer age;
     private BankAccount bankAccount;
     private List<Employee> employees;
 
     public Client() {
+        this.employees = new ArrayList<>();
     }
 
     @Column(name = "full_name", nullable = false)
-    public String getFull_name() {
-        return this.full_name;
+    public String getFullName() {
+        return this.fullName;
     }
 
     @Column(name = "age")
@@ -39,8 +41,8 @@ public class Client extends BaseEntity{
         return this.employees;
     }
 
-    public void setFull_name(String full_name) {
-        this.full_name = full_name;
+    public void setFullName(String full_name) {
+        this.fullName = full_name;
     }
 
     public void setAge(Integer age) {

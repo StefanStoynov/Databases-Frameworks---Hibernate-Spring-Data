@@ -88,7 +88,7 @@ public class ImportController extends BaseController {
     }
 
     @PostMapping("/clients")
-    public ModelAndView importClientsConfirm(@RequestParam(required = false, name = "clients") String clients) {
+    public ModelAndView importClientsConfirm(@RequestParam(required = false, name = "clients") String clients) throws IOException {
         String importResult = this.clientService.importClients(clients);
         System.out.println(importResult);
 

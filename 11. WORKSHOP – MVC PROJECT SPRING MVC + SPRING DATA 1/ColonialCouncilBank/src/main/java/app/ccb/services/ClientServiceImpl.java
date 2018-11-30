@@ -1,6 +1,10 @@
 package app.ccb.services;
 
+import app.ccb.domain.dtos.ClientImportDto;
+import app.ccb.domain.entities.Client;
+import app.ccb.domain.entities.Employee;
 import app.ccb.repositories.ClientRepository;
+import app.ccb.repositories.EmployeeRepository;
 import app.ccb.util.FileUtil;
 import app.ccb.util.ValidationUtil;
 import com.google.gson.Gson;
@@ -15,6 +19,7 @@ public class ClientServiceImpl implements ClientService {
     private static final String CLIENT_FILE_PATH = "C:\\Users\\sstoy\\Desktop\\SoftUni\\Git Hub\\Databases-Frameworks---Hibernate-Spring-Data\\11. WORKSHOP – MVC PROJECT SPRING MVC + SPRING DATA 1\\ColonialCouncilBank\\src\\main\\resources\\files\\json\\clients.json";
 
     private final ClientRepository clientRepository;
+    private final EmployeeRepository employeeRepository;
     private final FileUtil fileUtil;
     private final Gson gson;
     private final ModelMapper modelMapper;
@@ -22,8 +27,9 @@ public class ClientServiceImpl implements ClientService {
 
 
     @Autowired
-    public ClientServiceImpl(ClientRepository clientRepository, FileUtil fileUtil, Gson gson, ModelMapper modelMapper, ValidationUtil validationUtil) {
+    public ClientServiceImpl(ClientRepository clientRepository, EmployeeRepository employeeRepository, FileUtil fileUtil, Gson gson, ModelMapper modelMapper, ValidationUtil validationUtil) {
         this.clientRepository = clientRepository;
+        this.employeeRepository = employeeRepository;
         this.fileUtil = fileUtil;
         this.gson = gson;
         this.modelMapper = modelMapper;
@@ -46,10 +52,43 @@ public class ClientServiceImpl implements ClientService {
     public String importClients(String clients) {
         StringBuilder sb = new StringBuilder();
 
+        ClientImportDto[]clientImportDtos = this.gson.fromJson(clients,ClientImportDto[].class);
+
+        for (ClientImportDto dto : clientImportDtos) {
+            if (!this.validationUtil.isValid(dto)){
+                sb.append("Error: Incorrect Data!").append(System.lineSeparator());
+                continue;
+            }
+
+            Employee employeeEntity = this.employeeRepository
+                    .findByFirstNameAndLastName(
+                            dto.getAppointedEmployeeFullName().split("\\s+")[0],
+                            dto.getAppointedEmployeeFullName().split("\\s+")[1])
+                    .orElse(null);
+
+            if (employeeEntity == null){
+                sb.append("Error: Incorrect Data!").append(System.lineSeparator());
+                continue;
+            }
+
+            Client client = this.clientRepository.findByFullName(String.format("%s %s",dto.getFirstName(), dto.getLastName())).orElse(null);
+
+            if (client != null){
+                sb.append("Error: Incorrect Data!").append(System.lineSeparator());
+                continue;
+            }
+
+            Client clientEntity = this.modelMapper.map(dto, Client.class);
+            clientEntity.setFullName(String.format("%s %s",dto.getFirstName(),dto.getLastName()));
+            clientEntity.getEmployees().add(employeeEntity);
+
+            this.clientRepository.saveAndFlush(clientEntity);
+
+            sb.append(String.format("Successfully imported Client - %s.%n",clientEntity.getFullName()));
+        }
 
 
-
-        return null;
+        return sb.toString().trim();
     }
 
     @Override

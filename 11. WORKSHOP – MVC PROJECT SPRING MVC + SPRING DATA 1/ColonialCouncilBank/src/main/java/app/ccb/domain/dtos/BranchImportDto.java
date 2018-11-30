@@ -1,7 +1,5 @@
 package app.ccb.domain.dtos;
 
-import com.google.gson.annotations.Expose;
-
 import javax.validation.constraints.NotNull;
 
 public class BranchImportDto {
