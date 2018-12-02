@@ -1,6 +1,7 @@
 package app.ccb.services;
 
 import app.ccb.domain.dtos.ClientImportDto;
+import app.ccb.domain.entities.Card;
 import app.ccb.domain.entities.Client;
 import app.ccb.domain.entities.Employee;
 import app.ccb.repositories.ClientRepository;
@@ -13,6 +14,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
+import java.util.List;
 
 @Service
 public class ClientServiceImpl implements ClientService {
@@ -39,7 +41,7 @@ public class ClientServiceImpl implements ClientService {
     @Override
     public Boolean clientsAreImported() {
 
-     return this.clientRepository.count() != 0;
+        return this.clientRepository.count() != 0;
 
     }
 
@@ -52,10 +54,10 @@ public class ClientServiceImpl implements ClientService {
     public String importClients(String clients) {
         StringBuilder sb = new StringBuilder();
 
-        ClientImportDto[]clientImportDtos = this.gson.fromJson(clients,ClientImportDto[].class);
+        ClientImportDto[] clientImportDtos = this.gson.fromJson(clients, ClientImportDto[].class);
 
         for (ClientImportDto dto : clientImportDtos) {
-            if (!this.validationUtil.isValid(dto)){
+            if (!this.validationUtil.isValid(dto)) {
                 sb.append("Error: Incorrect Data!").append(System.lineSeparator());
                 continue;
             }
@@ -66,25 +68,25 @@ public class ClientServiceImpl implements ClientService {
                             dto.getAppointedEmployeeFullName().split("\\s+")[1])
                     .orElse(null);
 
-            if (employeeEntity == null){
+            if (employeeEntity == null) {
                 sb.append("Error: Incorrect Data!").append(System.lineSeparator());
                 continue;
             }
 
-            Client client = this.clientRepository.findByFullName(String.format("%s %s",dto.getFirstName(), dto.getLastName())).orElse(null);
+            Client client = this.clientRepository.findByFullName(String.format("%s %s", dto.getFirstName(), dto.getLastName())).orElse(null);
 
-            if (client != null){
+            if (client != null) {
                 sb.append("Error: Incorrect Data!").append(System.lineSeparator());
                 continue;
             }
 
             Client clientEntity = this.modelMapper.map(dto, Client.class);
-            clientEntity.setFullName(String.format("%s %s",dto.getFirstName(),dto.getLastName()));
+            clientEntity.setFullName(String.format("%s %s", dto.getFirstName(), dto.getLastName()));
             clientEntity.getEmployees().add(employeeEntity);
 
             this.clientRepository.saveAndFlush(clientEntity);
 
-            sb.append(String.format("Successfully imported Client - %s.%n",clientEntity.getFullName()));
+            sb.append(String.format("Successfully imported Client - %s.%n", clientEntity.getFullName()));
         }
 
 
@@ -93,7 +95,23 @@ public class ClientServiceImpl implements ClientService {
 
     @Override
     public String exportFamilyGuy() {
-        // TODO : Implement Me
-        return null;
+        List<Client> clients = this.clientRepository.clientWithMostCards();
+
+        StringBuilder result = new StringBuilder();
+
+        Client familyGay = clients.get(0);
+
+        result.append(String.format("Full name: %s%nAge: %d%nBank account number: %s%n"
+                , familyGay.getFullName()
+                , familyGay.getAge()
+                , familyGay.getBankAccount().getAccountNumber()
+        ));
+        result.append(" Cards:").append(System.lineSeparator());
+        for (Card card : familyGay.getBankAccount().getCards()) {
+
+            result.append(String.format("   %s - %s%n", card.getCardNumber(), card.getCardStatus()));
+        }
+
+        return result.toString().trim();
     }
 }

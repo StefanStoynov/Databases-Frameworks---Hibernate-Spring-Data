@@ -2,6 +2,7 @@ package app.ccb.services;
 
 import app.ccb.domain.dtos.EmployeeImportDto;
 import app.ccb.domain.entities.Branch;
+import app.ccb.domain.entities.Client;
 import app.ccb.domain.entities.Employee;
 import app.ccb.repositories.BranchRepository;
 import app.ccb.repositories.EmployeeRepository;
@@ -14,6 +15,7 @@ import org.springframework.stereotype.Service;
 
 import java.io.IOException;
 import java.time.LocalDate;
+import java.util.List;
 
 @Service
 public class EmployeeServiceImpl implements EmployeeService {
@@ -80,7 +82,15 @@ public class EmployeeServiceImpl implements EmployeeService {
 
     @Override
     public String exportTopEmployees() {
-        // TODO : Implement Me
-        return null;
+        StringBuilder result = new StringBuilder();
+        List<Employee> employees = this.employeeRepository.topEmployees();
+        for (Employee employee : employees) {
+            result.append(String.format("%s %s%n",employee.getFirstName(),employee.getLastName()));
+            result.append("Clients:").append(System.lineSeparator());
+            for (Client client : employee.getClients()) {
+                result.append(String.format("   %s%n", client.getFullName()));
+            }
+        }
+        return result.toString().trim();
     }
 }
