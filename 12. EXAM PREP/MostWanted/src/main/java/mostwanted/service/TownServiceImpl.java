@@ -1,10 +1,16 @@
 package mostwanted.service;
 
+import com.google.gson.Gson;
+import mostwanted.domain.dtos.TownImportDto;
+import mostwanted.domain.entities.Town;
 import mostwanted.repository.TownRepository;
 import mostwanted.util.FileUtil;
+import mostwanted.util.ValidationUtil;
+import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
+import java.util.Arrays;
 
 @Service
 public class TownServiceImpl implements TownService {
@@ -13,10 +19,16 @@ public class TownServiceImpl implements TownService {
 
     private final TownRepository townRepository;
     private final FileUtil fileUtil;
+    private final ValidationUtil validationUtil;
+    private final Gson gson;
+    private final ModelMapper modelMapper;
 
-    public TownServiceImpl(TownRepository townRepository, FileUtil fileUtil) {
+    public TownServiceImpl(TownRepository townRepository, FileUtil fileUtil, ValidationUtil validationUtil, Gson gson, ModelMapper modelMapper) {
         this.townRepository = townRepository;
         this.fileUtil = fileUtil;
+        this.validationUtil = validationUtil;
+        this.gson = gson;
+        this.modelMapper = modelMapper;
     }
 
     @Override
@@ -31,7 +43,31 @@ public class TownServiceImpl implements TownService {
 
     @Override
     public String importTowns(String townsFileContent) {
-        return null;
+        StringBuilder resultTowns = new StringBuilder();
+
+        TownImportDto[] townImportDtos = gson.fromJson(townsFileContent, TownImportDto[].class);
+
+        Arrays.stream(townImportDtos).forEach(townImportDto -> {
+            Town town = this.townRepository.findByName(townImportDto.getName()).orElse(null);
+            if (town != null) {
+                resultTowns.append("Error: Duplicate Data!").append(System.lineSeparator());
+                return;
+            }
+
+            if (!this.validationUtil.isValid(townImportDto)) {
+                resultTowns.append("Error: Incorrect Data!").append(System.lineSeparator());
+                return;
+            }
+
+
+            town = this.modelMapper.map(townImportDto, Town.class);
+
+            this.townRepository.saveAndFlush(town);
+            resultTowns.append(String.format("Successfully imported %s – %s.", townImportDtos.getClass().getSimpleName(), townImportDto.getName()));
+            resultTowns.append(System.lineSeparator());
+        });
+
+        return resultTowns.toString().trim();
     }
 
     @Override
