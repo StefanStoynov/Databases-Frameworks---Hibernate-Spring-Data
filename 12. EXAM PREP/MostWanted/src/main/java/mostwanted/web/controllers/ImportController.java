@@ -109,7 +109,7 @@ public class ImportController extends BaseController {
     }
 
     @PostMapping("/race-entries")
-    public ModelAndView importRaceEntriesConfirm() throws JAXBException {
+    public ModelAndView importRaceEntriesConfirm() throws JAXBException, IOException {
         System.out.println(this.raceEntryService.importRaceEntries());
 
         return super.redirect("/import/xml");
