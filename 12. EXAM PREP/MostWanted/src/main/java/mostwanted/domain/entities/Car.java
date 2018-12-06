@@ -41,12 +41,12 @@ public class Car extends BaseEntity {
     }
 
     @Column(name = "max_speed")
-    public double getMaxSpeed() {
+    public Double getMaxSpeed() {
         return this.maxSpeed;
     }
 
     @Column(name = "zero_to_sixty")
-    public double getZeroToSixty() {
+    public Double getZeroToSixty() {
         return this.zeroToSixty;
     }
 
@@ -72,11 +72,11 @@ public class Car extends BaseEntity {
         this.yearOfProduction = yearOfProduction;
     }
 
-    public void setMaxSpeed(double maxSpeed) {
+    public void setMaxSpeed(Double maxSpeed) {
         this.maxSpeed = maxSpeed;
     }
 
-    public void setZeroToSixty(double zeroToSixty) {
+    public void setZeroToSixty(Double zeroToSixty) {
         this.zeroToSixty = zeroToSixty;
     }
 
