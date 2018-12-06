@@ -12,8 +12,10 @@ import mostwanted.util.ValidationUtil;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 
+import javax.validation.constraints.Null;
 import java.io.IOException;
 import java.util.Arrays;
+import java.util.List;
 
 @Service
 public class RacerServiceImpl implements RacerService {
@@ -77,8 +79,41 @@ public class RacerServiceImpl implements RacerService {
         return racersResult.toString().trim();
     }
 
+    /**
+     *
+     * Export all racers which have any cars:
+     *  •	Export the racer’s name, age (but ONLY if it is NOT NULL), list of cars.
+     *          o	In case the racer’s age property is NULL, do NOT include it.
+     *  •	The cars should be strings in the following format: “{brand} {model} {yearOfProduction}”.
+     *  •	Order them descending, by count of cars they have, and then by racer name alphabetically.
+     */
     @Override
     public String exportRacingCars() {
-        return null;
+        StringBuilder racingCarsResult = new StringBuilder();
+
+        List<Racer> racers = this.racerRepository.racingCars();
+        racers.stream().forEach(racer -> {
+
+            racingCarsResult.append("Name: ").append(racer.getName()).append(System.lineSeparator());
+
+            if (racer.getAge()!=null){
+                racingCarsResult.append("Age: ").append(racer.getAge()).append(System.lineSeparator());
+            }
+
+            racingCarsResult.append("Cars:").append(System.lineSeparator());
+
+            racer.getCars().stream().forEach(car -> {
+                racingCarsResult
+                        .append(String.format("\t%s %s %s",
+                                car.getBrand(),
+                                car.getModel(),
+                                car.getYearOfProduction()
+                        ))
+                        .append(System.lineSeparator());
+            });
+            racingCarsResult.append(System.lineSeparator());
+        });
+
+        return racingCarsResult.toString().trim();
     }
 }

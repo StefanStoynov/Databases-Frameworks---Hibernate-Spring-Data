@@ -7,7 +7,6 @@ import mostwanted.repository.TownRepository;
 import mostwanted.util.FileUtil;
 import mostwanted.util.ValidationUtil;
 import org.modelmapper.ModelMapper;
-import org.springframework.orm.hibernate5.SpringFlushSynchronization;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
@@ -72,6 +71,11 @@ public class TownServiceImpl implements TownService {
         return resultTowns.toString().trim();
     }
 
+    /**
+     * Export all towns which have any racers in them:
+     * •	Export only the town name (as name) and count of racers (as racers).
+     * •	Order them descending, by count of racers they have, and then by town name alphabetically.
+    **/
     @Override
     public String exportRacingTowns() {
         StringBuilder racingTownsResult = new StringBuilder();
