@@ -7,10 +7,12 @@ import mostwanted.repository.TownRepository;
 import mostwanted.util.FileUtil;
 import mostwanted.util.ValidationUtil;
 import org.modelmapper.ModelMapper;
+import org.springframework.orm.hibernate5.SpringFlushSynchronization;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
 import java.util.Arrays;
+import java.util.List;
 
 @Service
 public class TownServiceImpl implements TownService {
@@ -72,6 +74,15 @@ public class TownServiceImpl implements TownService {
 
     @Override
     public String exportRacingTowns() {
-        return null;
+        StringBuilder racingTownsResult = new StringBuilder();
+
+        List<Town> towns = this.townRepository.racingTowns();
+        towns.stream().forEach(town -> {
+            racingTownsResult.append("Name: ");
+            racingTownsResult.append(town.getName()).append(System.lineSeparator());
+            racingTownsResult.append("Racers: ").append(town.getRacer().size()).append(System.lineSeparator());
+            racingTownsResult.append(System.lineSeparator());
+        });
+        return racingTownsResult.toString().trim();
     }
 }
