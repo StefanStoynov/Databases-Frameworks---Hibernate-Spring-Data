@@ -14,7 +14,6 @@ import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 
 import javax.xml.bind.JAXBException;
-import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.Arrays;
@@ -70,7 +69,7 @@ public class RaceEntryServiceImpl implements RaceEntryService {
             raceEntryEntity.setRacer(racerEntity);
             raceEntryEntity.setCar(carEntity);
             raceEntryEntity.setRace(null);
-            raceEntryEntity.setId(null);
+            raceEntryEntity.setId(null); // entity is taking for id -> car_id, need to be reset.
 
             this.raceEntryRepository.saveAndFlush(raceEntryEntity);
 
